@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deshboard</title>
+    <style>
+        * {
+        box-sizing: border-box;
+        }
+
+        .box {
+        float: left;
+        width: 20%;
+        padding: 50px;
+        margin: 2%;
+        border-radius: 15px;
+        /* margin-right: 10px; */
+        }
+
+        .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+        }
+        table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        }
+        
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+   
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="collapse navbar-collapse" id="navbarText">
+            {% if current_user.is_authenticated %}
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('dashboard')}}">Dashboard<span class="sr-only">(current)</span></a>
+              </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="{{url_for('BookFlight')}}">Book Flight<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('ShowFlights')}}">Your Flights<span class="sr-only">(current)</span></a>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{url_for('ShowAllUsersFlights')}}">Other Flights<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{url_for('delete_flight')}}">Delete Flight<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{url_for('upadte_flight')}}">Update Flight<span class="sr-only">(current)</span></a>
+                </li>
+          </ul>
+        
+          <span class="navbar-text">
+            <a class="nav-link" href="{{url_for('logout')}}">logout</a>
+          </span>
+          <span class="navbar-text">
+            <a class="nav-link" href="{{url_for('regsiter')}}">Regsiter</a>
+          </span>
+        {% else %}
+            <span class="navbar-text">
+                <a class="nav-link" href="{{url_for('login')}}">Regsiter</a>
+            </span>
+            <span class="navbar-text">
+                <a class="nav-link" href="{{url_for('regsiter')}}">Regsiter</a>
+            </span>
+        {% endif %}
+          
+        </div>
+      </nav>
+    <hr>
+    <h1 style="text-align: center;"><b><em>Welcome {{user.name}} to Dashboard</em></b></h1>
+    <hr>
+    <div class="clearfix">
+        <div class="box" style="background-color:rgb(147, 236, 134)">
+            <h4><em><b>Flight's Arrived={{flights_length['Arrived length']}}</b></em></h4>
+        </div>
+        <div class="box" style="background-color:rgb(202, 100, 100)">
+            <h4><em><b>Flight's Active={{flights_length['Active length']}}</b></em></h4>
+        </div>
+        <div class="box" style="background-color:rgb(223, 112, 216)">
+            <h4><em><b>Flight's Delay={{flights_length['Delay length']}}</b></em></h4>
+        </div>
+        <div class="box" style="background-color:rgb(109, 189, 216)">
+            <h4><em><b>Total Flights={{flights_length['Total length']}}</b></em></h4>
+        </div>
+    </div>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ form.status.label() }}
+        {{ form.status() }}
+        {{ form.submit() }}
+    </form><br>
+    {% if flag %}
+        {% if flights %}
+            {% if user_status in ["active","delay","arrived"] %}
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                        <th scope="col">AirLine Type</th>
+                        <th scope="col">Depurture Time</th>
+                        <th scope="col">Arrival Time</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Ticket Price</th>
+                        <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                        <tbody>
+                        {% for flight in flights %}
+                            {% if flight.status==user_status %}
+                                
+                                <tr>
+                                <td>{{flight.airline_type}}</td>
+                                <td>{{flight.depurture_time}}</td>
+                                <td>{{flight.arrival_time}}</td>
+                                <td>{{flight.date}}</td>
+                                <td>{{flight.From}}</td>
+                                <td>{{flight.To}}</td>
+                                <td>{{flight.ticket_price}}</td>
+                                <td>{{flight.status}}</td>
+                                
+                                </tr>
+                            
+                        
+                            {% endif %}
+                        
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <h3>Please Insert Correct Status</h3>
+            {% endif %}
+        {% endif %}
+    {% else %}
+
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                        <th scope="col">AirLine Type</th>
+                        <th scope="col">Depurture Time</th>
+                        <th scope="col">Arrival Time</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Ticket Price</th>
+                        <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                        <tbody>
+                        {% for flight in flights %}
+                            
+                                
+                            <tr>
+                            <td>{{flight.airline_type}}</td>
+                            <td>{{flight.depurture_time}}</td>
+                            <td>{{flight.arrival_time}}</td>
+                            <td>{{flight.date}}</td>
+                            <td>{{flight.From}}</td>
+                            <td>{{flight.To}}</td>
+                            <td>{{flight.ticket_price}}</td>
+                            <td>{{flight.status}}</td>
+                            
+                            </tr>
+                            
+                        
+                            
+                        
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+    {% endif %}
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</html>
